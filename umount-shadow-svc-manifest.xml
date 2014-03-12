@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<service_bundle type='manifest' name='umount-shadow:umount-shadow-svc'>
+
+<service
+	name='umount-shadow-svc'
+	type='service'
+	version='1'>
+	
+	<create_default_instance enabled='true' />
+	<single_instance />
+	
+	<!-- Run the script late in the startup sequence after first boot. -->
+	<dependency name='multi-user' grouping='require_all' restart_on='none' type='service'>
+		<service_fmri value='svc:/milestone/multi-user:default' />
+	</dependency>
+	
+	<exec_method
+		type='method'
+		name='start'
+		exec='/opt/custom/script/umount-shadow.sh'
+		timeout_seconds='360'>
+		<method_context>
+			<method_credential user='root'/>
+		</method_context>
+	</exec_method>
+	
+	<exec_method
+		type='method'
+		name='stop'
+		exec=':true'
+		timeout_seconds='60'
+	/>
+	
+	<property_group name='startd' type='framework'>
+		<propval name='duration' type='astring' value='transient' />
+	</property_group>
+	
+</service>
+</service_bundle>
