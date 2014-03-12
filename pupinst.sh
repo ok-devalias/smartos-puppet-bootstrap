@@ -1,29 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 # Install puppet and prerequisites
-PKGVERS="ruby193-puppet-3.1.1"
+PKGVERS=`pkgin av | grep puppet | cut -f1 -d" "`
 # setup pkgin on global zone, if needed
 echo "Checking OS type..."
-if [[ "$MACHTYPE" == "*solaris*" ]]; then
-	if [[ `uname -a` == "*joyent*" ]]; then
+if [[ `echo $MACHTYPE | grep solaris` ]]; then
+	if [[ `uname -a | grep joyent` ]]; then
 		echo "Found Joyent SmartOS"
 		echo "Checking for pkgin..."
-		if [[ ! which pkgin ]]; then
+		if [ ! `which pkgin` ]; then
 			echo "pkgin not installed."
 			echo "Downloading pkgin bootstrap for SmartOS"
 			cd /
-			curl -k http://pkgsrc.joyent.com/packages/SmartOS/bootstrap/bootstrap-2013Q4-x86_64.tar.gz | gzcat | tar -xf -
+			`curl -k http://pkgsrc.joyent.com/packages/SmartOS/bootstrap/bootstrap-2013Q4-x86_64.tar.gz | gzcat | tar -xf -`
 			echo "Installing pkgin bootstrap for SmartOS"
-			pkg_admin rebuild
-			pkgin -y up
+			`pkg_admin rebuild`
+			`pkgin -y up`
 			echo "Done"
 			echo
 			# Prepare writable shadow file
 			echo "Checking for loopback-mounted /etc/shadow..."
-			if [[ `df | grep /etc/shadow`  ]]
+			if [[ `df | grep /etc/shadow`  ]]; then
 				echo "Loopback found."
 				echo "Preparing /etc/shadow"
-				umount /usbkey/shadow
-				cp /usbkey/shadow /etc/shadow
+				`umount /usbkey/shadow`
+				`cp /usbkey/shadow /etc/shadow`
 				echo "Done"
 				echo
 			else
@@ -35,12 +35,21 @@ if [[ "$MACHTYPE" == "*solaris*" ]]; then
 			echo
 		fi
 		# Grab ruby puppet bundle installer
-		echo "Installing $PKGVERS from repository"
-		pkgin -y in $PKGVERS
-		echo "Done"
-		echo
-		echo
-		echo "Puppet install root is /opt/local"
+		echo "Checking for Puppet..."
+		if [[ ! `pkgin ls | grep puppet`  ]]; then
+			echo "Installing $PKGVERS from repository"
+			`pkgin -y in $PKGVERS`
+			echo "Done"
+			echo
+			echo
+			echo "Puppet install root is /opt/local"
+			echo
+		else
+			echo "Puppet found."
+			echo "Nothing to do."
+			echo
+			exit 0
+		fi
 	else
 		echo "Found SunOS, but not Joyent SmartOS."
 		echo "Exiting."
@@ -51,4 +60,3 @@ else
 	echo "Exiting."
 	exit 1
 fi
-
