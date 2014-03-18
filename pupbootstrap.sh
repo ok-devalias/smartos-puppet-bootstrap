@@ -141,9 +141,11 @@ debian|ubuntu)
 		OSREL=$(lsb_release -c | cut -d: -f2 | sed s/'^\t'//)
 		PKG="puppetlabs-release-$OSREL.deb"
 		REPOURL="https://apt.puppetlabs.com/$PKG"
-		`wget $REPOURL`
-		`dpkg -i $PKG`
-		`apt-get update`
+		if [ ! -f /tmp/$PKG ]; then
+			`wget -q -o /tmp/$PKG $REPOURL`
+		fi
+		`dpkg -i /tmp/$PKG`
+		`apt-get -q update >> aptget.log 2>&1`
 	else
 		echo "Puppet found."
 		echo "Nothing to do."
