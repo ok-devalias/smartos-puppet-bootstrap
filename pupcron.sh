@@ -9,14 +9,28 @@ SunOS)
 ;;	
 esac
 MANIFEST_DIR="$PUPPET_ROOT/manifests"
-
-if [ ! $(crontab -l | grep "pupapply.sh") ]; then
-	cp "pupapply.sh" "$PUPPET_ROOT/pupapply.sh"
-	echo "Setting cron job to maintain state."
-	CRON="*/30 * * * * $PUPPET_ROOT/pupapply.sh"
-	crontab < echo "$CRON"
-	echo "Cron job set.  State maintained."
+SCRIPT="pupapply.sh"
+if [ ! "$(crontab -l | grep "$SCRIPT")" ]; then
+	if [ -f "$SCRIPT" ]; then
+		cp "$SCRIPT" "$PUPPET_ROOT/$SCRIPT"
+	else
+		if [ ! -f "$PUPPET_ROOT/$SCRIPT" ]; then
+			echo "$SCRIPT unavailable; please move to either: "
+			echo " - $PUPPET_ROOT/$SCRIPT"
+			echo " - $(pwd)"
+			echo
+			echo "Terminating."
+			exit 1
+		fi
+	fi	
+	if [ -f "$PUPPET_ROOT/$SCRIPT" ]; then
+		echo "Setting cron job to maintain state."
+		CRON="*/30 * * * * $PUPPET_ROOT/$SCRIPT"
+		crontab < echo "$CRON"
+		echo "Cron job set.  State maintained."
+	else
+		echo "Missing $SCRIPT at $PUPPET_ROOT"
+	fi
 else
 	echo "Cron job detected.  State already maintained."
 fi
-

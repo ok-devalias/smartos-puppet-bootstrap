@@ -56,12 +56,5 @@ fi
 
 echo "Puppet manifest applied."
 echo
-echo "Starting Cronjob process."
-bash pupcron.sh
+bash pupinfo.sh
 
-if [ ! $? == 0 ]; then
-	echo "Something went wrong in the cronjob process."
-	exit 1
-fi
-
-echo "Cronjob process completed."

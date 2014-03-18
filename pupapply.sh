@@ -21,3 +21,13 @@ if [ -d "$MODULE_DIR" ]; then
 	echo "Applying manifest."
 	puppet apply --modulepath "$MODULE_DIR" "$MANIFEST_DIR/$MANIFEST"
 fi
+
+echo "Starting Cronjob process."
+bash pupcron.sh
+
+if [ ! $? == 0 ]; then
+	echo "Something went wrong in the cronjob process."
+	exit 1
+fi
+
+echo "Cronjob process completed."
