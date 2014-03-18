@@ -24,7 +24,7 @@ echo "\t-CentOS 6"
 echo "\t-Probably RHEL!"
 echo
 echo
-sleep 3
+sleep 2
 
 echo "Starting puppet bootstrap process."
 bash pupbootstrap.sh
@@ -53,3 +53,15 @@ if [ ! $? == 0 ]; then
 	echo "Something went wrong in the puppet apply process."
 	exit 1
 fi
+
+echo "Puppet manifest applied."
+echo
+echo "Starting Cronjob process."
+bash pupcron.sh
+
+if [ ! $? == 0 ]; then
+	echo "Something went wrong in the cronjob process."
+	exit 1
+fi
+
+echo "Cronjob process completed."
