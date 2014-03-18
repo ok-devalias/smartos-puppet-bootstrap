@@ -79,6 +79,9 @@ smartosgz)
 		pkgin -y in "$PKGVERS" > /dev/null 2>&1
 		echo "Done"
 		echo
+		# make sure module and manifest directories exist
+		mkdir /opt/local/etc/puppet/manifests
+		mkdir /opt/local/etc/puppet/modules
 		echo
 		echo "Puppet install root is /opt/local"
 		echo
@@ -97,6 +100,10 @@ smartosin)
 		pkgin -y in "$PKGVERS" > /dev/null 2>&1
 		echo "Done"
 		echo
+		# make sure some directories exist
+		mkdir /opt/local/etc/puppet/manifests
+		mkdir /opt/local/etc/puppet/modules
+		mkdir /opt/local/share/www
 		echo
 		echo "Puppet install root is /opt/local"
 		echo
