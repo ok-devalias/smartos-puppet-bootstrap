@@ -136,18 +136,25 @@ debian|ubuntu)
 	# check puppet 
 	echo "Checking for Puppet..."
 	if [ ! `which puppet` ]; then
-		echo "Puppet not found."
-		echo "Setting repository and installing..."
+		echo "Puppet not found."		
 		# set repo
 		# lsb_release should be available on even minimal Debian 6 and Ubuntu 10.04/12.04 installations
 		OSREL=$(lsb_release -c | cut -d: -f2 | sed s/'^\t'//)
 		PKG="puppetlabs-release-$OSREL.deb"
 		REPOURL="https://apt.puppetlabs.com/$PKG"
-		if [ ! -f /tmp/$PKG ]; then
+		echo "Adding PuppetLabs repo: $REPOURL"
+		echo "Downloading Puppet Labs package: $PKG"
+		if [ ! -f /tmp/$PKG ||  ]; then
 			`curl -o /tmp/$PKG $REPOURL`
 		fi
-		`dpkg -i /tmp/$PKG`
+		echo "Done."
+		echo "Preparing install..."
+		`dpkg -i /tmp/$PKG >> dpkg.log 2>&1`
 		`apt-get -q update >> aptget.log 2>&1`
+		echo "Done."
+		echo "Installing puppet and dependencies..."
+		`apt-get -q install puppet`
+		echo "Done."
 	else
 		echo "Puppet found."
 		echo "Nothing to do."
