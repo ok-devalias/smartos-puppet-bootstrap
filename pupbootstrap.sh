@@ -80,8 +80,8 @@ smartosgz)
 		echo "Done"
 		echo
 		# make sure module and manifest directories exist
-		mkdir /opt/local/etc/puppet/manifests
-		mkdir /opt/local/etc/puppet/modules
+		mkdir /opt/local/etc/puppet/manifests > /dev/null 2>&1
+		mkdir /opt/local/etc/puppet/modules > /dev/null 2>&1
 		echo
 		echo "Puppet install root is /opt/local"
 		echo
@@ -101,9 +101,9 @@ smartosin)
 		echo "Done"
 		echo
 		# make sure some directories exist
-		mkdir /opt/local/etc/puppet/manifests
-		mkdir /opt/local/etc/puppet/modules
-		mkdir /opt/local/share/www
+		mkdir /opt/local/etc/puppet/manifests > /dev/null 2>&1
+		mkdir /opt/local/etc/puppet/modules > /dev/null 2>&1
+		mkdir /opt/local/share/www > /dev/null 2>&1
 		echo
 		echo "Puppet install root is /opt/local"
 		echo
@@ -135,6 +135,7 @@ centos|redhat)
 		echo "Installing puppet and dependencies"
 		yum install -y puppet  > yuminst.log 2>&1
 		echo "Done."
+		mkdir /var/www/html > /dev/null 2>&1
 		echo "Puppet Installed."
 	else
 		echo "Puppet found."
@@ -169,6 +170,7 @@ debian|ubuntu)
 		apt-get -qy install puppet >> aptget.inst.log 2>&1
 		rm -f /tmp/"$PKG" > /dev/null 2>&1
 		echo "Done."
+		mkdir /var/www/html > /dev/null 2>&1
 		echo "Puppet Installed."
 	else
 		echo "Puppet found."
