@@ -144,7 +144,7 @@ debian|ubuntu)
 		REPOURL="https://apt.puppetlabs.com/$PKG"
 		echo "Adding PuppetLabs repo: $REPOURL"
 		echo "Downloading Puppet Labs package: $PKG"
-		if [ ! -f /tmp/$PKG || ! `dpkg-query -l 'puppet*' | grep '^i'` ]; then
+		if [ ! -f /tmp/$PKG ] || [ ! `dpkg-query -l 'puppet*' | grep '^i'` ]; then
 			`curl -o /tmp/$PKG $REPOURL`
 		fi
 		echo "Done."
@@ -154,6 +154,7 @@ debian|ubuntu)
 		echo "Done."
 		echo "Installing puppet and dependencies..."
 		`apt-get -q install puppet`
+		`rm -f /tmp/$PKG`
 		echo "Done."
 	else
 		echo "Puppet found."
