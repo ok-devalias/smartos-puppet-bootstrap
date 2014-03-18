@@ -1,4 +1,3 @@
-#!/bin/bash
 # Bootstrap puppet 
 OS="unknown"
 # Check OS

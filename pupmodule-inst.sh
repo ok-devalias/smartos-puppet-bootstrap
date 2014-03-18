@@ -1,17 +1,16 @@
-#!/bin/bash
 # grab puppet modules jfryman-nginx and jproyo-git
 # sed some changes in for SmartOS compatibility
-OSBASE=$(uname)
 NGINX='jfryman-nginx'
 GIT='jproyo-git'
 VCSREPO='puppetlabs-vcsrepo'
-case "$OSBASE" in
-	SunOS*)
-		PUPPET_ROOT='/opt/local/etc/puppet'
-	;;
-	*)
-		PUPPET_ROOT='/etc/puppet'
-	;;	
+OSBASE=$(uname)
+case $OSBASE in
+SunOS)
+	PUPPET_ROOT='/opt/local/etc/puppet'
+;;
+*)
+	PUPPET_ROOT='/etc/puppet'
+;;	
 esac
 echo "Checking for needed puppet modules."
 if [ ! $(puppet module list | grep "$NGINX") ]; then
