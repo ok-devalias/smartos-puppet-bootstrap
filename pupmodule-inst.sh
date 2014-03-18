@@ -34,7 +34,7 @@ if [ "$OSBASE" == "SunOS" ]; then
 		sed -i 's/\(?i-mx:[a-z|]*|oraclelinux\)/\1|smartos/' "$PUPPET_ROOT/modules/nginx/manifests/params.pp"
 	fi
 	if [ ! "$(grep solaris "$PUPPET_ROOT"/modules/nginx/manifests/package.pp)" ]; then
-		sed -i '$::osfamily ?/ {N; s/\('\''redhat'\''\)/\1, '\''solaris'\''/}' "$PUPPET_ROOT/modules/nginx/manifests/package.pp"		
+		sed "/\$::osfamily ?/ {N; s/\('redhat'\)/\1, 'solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
 	fi
 	echo "Done."
 fi
