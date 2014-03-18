@@ -16,7 +16,7 @@ esac
 echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep $NGINX)" ]; then
 	echo "Installing module: $NGINX"
-	puppet module install "$NGINX" > /dev/null 2&>1
+	puppet module install "$NGINX"
 	echo "Done."	
 else
 	echo "Module $NGINX detected."	
@@ -34,29 +34,32 @@ if [ "$OSBASE" == "SunOS" ]; then
 		sed -i 's/\(?i-mx:[a-z|]*|oraclelinux\)/\1|smartos/' "$PUPPET_ROOT/modules/nginx/manifests/params.pp"
 	fi
 	if [ ! "$(grep solaris "$PUPPET_ROOT"/modules/nginx/manifests/package.pp)" ]; then
-		sed "/\$::osfamily ?/ {N; s/\('redhat'\)/\1, 'solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
+		sed -i "/\$::osfamily ?/ {N; s/\('redhat'\)/\1, 'solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
 	fi
 	echo "Done."
 fi
 
-if [ ! "$(puppet module list | grep "$GIT")" ]; then
+if [ ! "$(puppet module list | grep $GIT)" ]; then
 	echo "Installing module: $GIT"
-	puppet module install "$GIT" > /dev/null 2&>1
+	puppet module install "$GIT"
 	echo "Done."
 fi
 
 if [ "$OSBASE" == "SunOS" ]; then
+	echo "Checking $GIT for SmartOS fixes."
 	if [ ! "$(grep SmartOS "$PUPPET_ROOT"/modules/git/manifests/params.pp)" ]; then
-		GIT_FIX="\$bin = \$::operatingsystem ? {\n/(SmartOS|Solaris)/ => '/opt/local/bin/git'\ndefault             => '/usr/bin/git'\n}"
-		sed -i "s/\$bin =/{$GIT_FIX}/" "$PUPPET_ROOT/modules/git/manifests/params.pp"		
+		sed -i 's/$bin =/$bin = $::operatingsystem ? {\
+		\(SmartOS|Solaris\) => "\/opt\/local\/bin\/git"\
+		default             => "\/usr\/bin\/git"\
+		}/' "$PUPPET_ROOT/modules/git/manifests/params.pp"
 		echo "Done."
 	fi
 fi
 
-if [ ! "$(puppet module list | grep "$VCSREPO")" ]; then
+if [ ! "$(puppet module list | grep $VCSREPO)" ]; then
 	echo "Installing module: $VCSREPO"
-	puppet module install "$VCSREPO" > /dev/null 2&>1
-	echo "Done."	
+	puppet module install "$VCSREPO"
+	echo "Done."
 fi
 echo 
 echo "All modules installed."
