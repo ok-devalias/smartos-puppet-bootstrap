@@ -153,7 +153,7 @@ debian|ubuntu)
 		`apt-get -q update >> aptget.log 2>&1`
 		echo "Done."
 		echo "Installing puppet and dependencies..."
-		`apt-get -qy install puppet`
+		`apt-get -qy install puppet >> aptget.log 2>&1`
 		`rm -f /tmp/$PKG`
 		echo "Done."
 	else
