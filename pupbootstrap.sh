@@ -12,7 +12,7 @@ SunOS)
 	case $OSVER in
 	joyent*)
 		echo "Found SmartOS version $OSVER"
-		if [ ! `uname -o` ]; then
+		if [ ! "$(uname -o)" ]; then
 			echo "SmartOS global zone detected."
 			OS="smartosgz"
 		else
@@ -40,13 +40,13 @@ Linux)
     else
         OSVER=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | grep -v "system-release" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1 | cut -d$'\n' -f1)
     fi
-	OS=$(echo $OSVER | tr "[:upper:]" "[:lower:]")
+	OS=$(echo "$OSVER" | tr "[:upper:]" "[:lower:]")
 	echo "Found $OS"
 ;;
 *)
 	echo "Unknown OS Type:"
 	echo "$OSBASE"
-	echo `uname -o`
+	echo $(uname -o)
 	echo "$MACHTYPE"
 	echo
 	echo "Exiting."
@@ -58,14 +58,14 @@ esac
 case $OS in
 smartosgz)
 	echo "Checking for pkgin..."
-	if [ ! `which pkgin` ]; then
+	if [ ! "$(which pkgin)" ]; then
 		echo "pkgin not installed."
 		echo "Downloading pkgin bootstrap for SmartOS"
 		cd /
-		`curl -k http://pkgsrc.joyent.com/packages/SmartOS/bootstrap/bootstrap-2013Q4-x86_64.tar.gz | gzcat | tar -xf -`
+		curl -k http://pkgsrc.joyent.com/packages/SmartOS/bootstrap/bootstrap-2013Q4-x86_64.tar.gz | gzcat | tar -xf -
 		echo "Installing pkgin bootstrap for SmartOS"
-		`pkg_admin rebuild`
-		`pkgin -y up`
+		pkg_admin rebuild > /dev/null 2>&1
+		pkgin -y up > /dev/null 2>&1
 		echo "Done"
 		echo
 	else
@@ -74,9 +74,9 @@ smartosgz)
 	fi
 	# Grab ruby puppet bundle installer
 	echo "Checking for Puppet..."
-	if [[ ! `pkgin ls | grep puppet`  ]]; then
+	if [[ ! "$(pkgin ls | grep puppet)" ]]; then
 		echo "Installing $PKGVERS from repository"
-		`pkgin -y in $PKGVERS`
+		pkgin -y in "$PKGVERS" > /dev/null 2>&1
 		echo "Done"
 		echo
 		echo
@@ -92,9 +92,9 @@ smartosgz)
 smartosin)
 # Grab ruby puppet bundle installer
 	echo "Checking for Puppet..."
-	if [[ ! `pkgin ls | grep puppet`  ]]; then
+	if [[ ! "$(pkgin ls | grep puppet)" ]]; then
 		echo "Installing $PKGVERS from repository"
-		`pkgin -y in $PKGVERS`
+		pkgin -y in "$PKGVERS" > /dev/null 2>&1
 		echo "Done"
 		echo
 		echo
@@ -110,21 +110,25 @@ smartosin)
 centos|redhat)
 	# check for puppet
 	echo "Checking for Puppet..."
-	if [ ! `which puppet` ]; then
+	if [ ! "$(which puppet)" ]; then
 		# set repo
 		if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
 			OSREL=$(lsb_release -r | cut -d: -f2 | sed s/'^\t'//)
 		else
-			OSREL=$(cat /etc/$OS-release | cut -d' ' -f3)
+			OSREL=$(cut -d' ' -f3 < /etc/"$OS"-release)
 		fi
-		MAJVER=$(echo $OSREL | cut -d. -f1)
-		MINVER=$(echo $OSREL | cut -d. -f2)
+		MAJVER=$(echo "$OSREL" | cut -d. -f1)
+		MINVER=$(echo "$OSREL" | cut -d. -f2)
 		REPOURL="https://yum.puppetlabs.com/el/$MAJVER/products/$HOSTTYPE/puppetlabs-release-$MAJVER-10.noarch.rpm"
-		echo "Adding PuppetLabs repo: $REPOURL"
-		`rpm -ivh $REPOURL`
+		if [ ! "$(yum repolist | grep puppetlabs -m 1)" ]; then
+			echo "Adding PuppetLabs repo: $REPOURL"
+			rpm -ivh "$REPOURL"  > rpm.log 2>&1
+		fi
 		# install puppet prereqs and puppet
 		echo "Installing puppet and dependencies"
-		`yum install -y puppet`
+		yum install -y puppet  > yuminst.log 2>&1
+		echo "Done."
+		echo "Puppet Installed."
 	else
 		echo "Puppet found."
 		echo "Nothing to do."
@@ -135,27 +139,30 @@ centos|redhat)
 debian|ubuntu)
 	# check puppet 
 	echo "Checking for Puppet..."
-	if [ ! `which puppet` ]; then
+	if [ ! "$(which puppet)" ]; then
 		echo "Puppet not found."		
 		# set repo
 		# lsb_release should be available on even minimal Debian 6 and Ubuntu 10.04/12.04 installations
 		OSREL=$(lsb_release -c | cut -d: -f2 | sed s/'^\t'//)
 		PKG="puppetlabs-release-$OSREL.deb"
 		REPOURL="https://apt.puppetlabs.com/$PKG"
-		echo "Adding PuppetLabs repo: $REPOURL"
-		echo "Downloading Puppet Labs package: $PKG"
-		if [ ! -f /tmp/$PKG ] || [ ! `dpkg-query -l 'puppet*' | grep '^i'` ]; then
-			`curl -o /tmp/$PKG $REPOURL`
+		if [ ! "$(dpkg-query -l 'puppet*' | grep '^i')" ]; then
+			echo "Adding PuppetLabs repo: $REPOURL"			
+			if [ -f /tmp/"$PKG" ]; then
+				rm -f /tmp/"$PKG"  > /dev/null 2>&1
+			fi
+			curl -o /tmp/"$PKG" "$REPOURL" > /dev/null 2>&1
+			dpkg -i /tmp/"$PKG"  > /dev/null 2>&1
+			echo "Done."
+			echo "Preparing install..."
+			apt-get -qq update  > /dev/null 2>&1
 		fi
 		echo "Done."
-		echo "Preparing install..."
-		`dpkg -i /tmp/$PKG >> dpkg.log 2>&1`
-		`apt-get -q update >> aptget.log 2>&1`
-		echo "Done."
 		echo "Installing puppet and dependencies..."
-		`apt-get -qy install puppet >> aptget.log 2>&1`
-		`rm -f /tmp/$PKG`
+		apt-get -qy install puppet >> aptget.inst.log 2>&1
+		rm -f /tmp/"$PKG" > /dev/null 2>&1
 		echo "Done."
+		echo "Puppet Installed."
 	else
 		echo "Puppet found."
 		echo "Nothing to do."
