@@ -16,13 +16,13 @@ echo
 echo "Automate all the operating systems!"
 echo "Puppet Bootstrap script is functional on: "
 echo "-------------------------------------------------------"
-echo "\t-SmartOS instances"
-echo "\t-Ubuntu 10.04"
-echo "\t-Ubuntu 12.04"
-echo "\t-Debian 6"
-echo "\t-CentOS 6"
-echo "\t-Fedora 18"
-echo "\t-Probably RHEL!"
+echo " -SmartOS instances"
+echo " -Ubuntu 10.04"
+echo " -Ubuntu 12.04"
+echo " -Debian 6"
+echo " -CentOS 6"
+echo " -Fedora 18"
+echo " -Probably RHEL!"
 echo
 echo
 sleep 2
