@@ -20,12 +20,17 @@ echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep $NGINX)" ]; then
 	echo "Installing module: $NGINX"
 	puppet module install "$NGINX"
+	if [ "$OSBASE" == "SunOS" ]; then
+		pkgin -y in nginx > /dev/null 2&>1
+	fi
 	echo "Done."	
 else
 	echo "Module $NGINX detected."	
 fi
 
 if [ "$OSBASE" == "SunOS" ]; then
+    pkgin -y in nginx > /dev/null 2&>1
+	pkgin -y in git > /dev/null 2&>1
 	echo "Checking $NGINX for SmartOS fixes."
 	if [ ! "$(grep sunos "$MODULE_DIR"/nginx/manifests/params.pp)" ]; then
 		echo "Applying params.pp \$::kernel compatibility fix."
@@ -47,16 +52,19 @@ if [ "$OSBASE" == "SunOS" ]; then
 	fi
 	if [ ! "$(grep solaris "$MODULE_DIR"/nginx/manifests/package.pp)" ]; then
 		echo "Applying package.pp \$::osfamily compatibility fix."
-		sed -i "/\$::osfamily/ {N; s/\('redhat'\)/\1, 'solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
+		sed -i "/\$::osfamily/ {N; s/\('redhat'\)/\1, 'Solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
 	else
 		echo "package.pp \$::osfamily compatibility fix detected."
 	fi
-	echo "Done."
+	echo "Done."	
 fi
 
 if [ ! "$(puppet module list | grep $GIT)" ]; then
 	echo "Installing module: $GIT"
 	puppet module install "$GIT"
+	if [ "$OSBASE" == "SunOS" ]; then
+		pkgin -y in git > /dev/null 2&>1
+	fi
 	echo "Done."
 else
 	echo "Module $GIT detected."	

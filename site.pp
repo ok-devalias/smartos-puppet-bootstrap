@@ -1,7 +1,7 @@
 # /etc/puppet/manifests/site.pp
 node default {
   include nginx
-  include git  
+  include git
 
    $rootpath = $::operatingsystem ? {
      SmartOS => '/opt/local/share/www',
@@ -16,7 +16,7 @@ node default {
   nginx::resource::vhost { 'puppetlabs_exercise':
     ensure    		=> present,
     www_root  => $rootpath,
-    listen_port => '8080',
+    listen_port => '8080',	
   }
   
   vcsrepo { $rootpath:
