@@ -21,8 +21,7 @@ node default {
     source    	=> 'https://github.com/puppetlabs/exercise-webpage.git',
   }
   
-  cron::hourly {
-	  'pupapply.sh':
+  cron::hourly { 'pupapply.sh':
 		minute      		=> '11',
 		user        			=> 'root',
 		command    	=> "/root/pupapply.sh",
