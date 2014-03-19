@@ -29,7 +29,7 @@ if [ "$OSBASE" == "SunOS" ]; then
 	echo "Checking $NGINX for SmartOS fixes."
 	if [ ! "$(grep sunos "$MODULE_DIR"/nginx/manifests/params.pp)" ]; then
 		echo "Applying params.pp \$::kernel compatibility fix."
-		sed -i '/$::kernel ?/ {N; s/\(?i-mx:linux\)/\1\|sunos\)/}' "$PUPPET_ROOT/modules/nginx/manifests/params.pp"
+		sed -i '/$::kernel ?/ {N; s/\(?i-mx:linux\)/\1\|sunos/}' "$PUPPET_ROOT/modules/nginx/manifests/params.pp"
 	else
 		echo "params.pp \$::kernel compatibility fix detected."
 	fi
