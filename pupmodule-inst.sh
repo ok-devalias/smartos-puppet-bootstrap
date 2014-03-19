@@ -47,7 +47,7 @@ if [ "$OSBASE" == "SunOS" ]; then
 	fi
 	if [ ! "$(grep solaris "$MODULE_DIR"/nginx/manifests/package.pp)" ]; then
 		echo "Applying package.pp \$::osfamily compatibility fix."
-		sed -i "/\$::osfamily ?/ {N; s/\('redhat'\)/\1, 'solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
+		sed -i "/\$::osfamily/ {N; s/\('redhat'\)/\1, 'solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
 	else
 		echo "package.pp \$::osfamily compatibility fix detected."
 	fi
