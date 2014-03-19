@@ -2,11 +2,15 @@
 node default {
   include nginx
   include git  
-  include cron
 
    $rootpath = $::operatingsystem ? {
      SmartOS => '/opt/local/share/www',
 	 default   => '/var/www/html',
+   }
+   
+   $puppetpath = $::operatingsystem ? {
+     SmartOS => '/opt/local/etc/puppet',
+	 default   => '/etc/puppet',
    }
    
   nginx::resource::vhost { 'puppetlabs_exercise':
@@ -21,9 +25,10 @@ node default {
     source    	=> 'https://github.com/puppetlabs/exercise-webpage.git',
   }
   
-  cron::hourly { 'pupapply.sh':
+  cron::hourly{
+	  'pupapply.sh':
 		minute      		=> '11',
 		user        			=> 'root',
-		command    	=> "/root/pupapply.sh",
+		command    	=> "$puppetpath/pupapply.sh",		
 	}
 }
