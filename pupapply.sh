@@ -17,17 +17,10 @@ if [ ! -f "$MANIFEST_DIR/$MANIFEST" ] || [ ! "$(diff "$MANIFEST" "$MANIFEST_DIR/
 	cp "$MANIFEST" "$MANIFEST_DIR/$MANIFEST"
 fi
 
-if [ -d "$MODULE_DIR" ]; then
+if [ ! -d "$MODULE_DIR" ]; then
 	echo "Applying manifest."
 	puppet apply --modulepath "$MODULE_DIR" "$MANIFEST_DIR/$MANIFEST"
-fi
-
-echo "Starting Cronjob process."
-./pupcron.sh
-
-if [ ! $? == 0 ]; then
-	echo "Something went wrong in the cronjob process."
+else
+	echo "Modules directory $MODULE_DIR missing."
 	exit 1
 fi
-
-echo "Cronjob process completed."
