@@ -35,9 +35,9 @@ Linux)
     if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
         OSVER=$(lsb_release -i | cut -d: -f2 | sed s/'^\t'//)
 	elif [ -f /etc/system-release ]; then
-		OSVER=$(cat /etc/system-release | cut -d' ' -f1)
+		OSVER=$(cut -d' ' -f1 < /etc/system-release)
     else
-        OSVER=$(ls -d /etc/[A-Za-z]*[_-][rv]e[lr]* | grep -v "lsb" | grep -v "system-release" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1 | cut -d$'\n' -f1)
+        OSVER=$(find /etc -maxdepth 1 -type f | grep [A-Za-z]*[_-][rv]e[lr][A-Za-z]* | grep -v "lsb" | grep -v "system-release" | cut -d'/' -f3 | cut -d'-' -f1 | cut -d'_' -f1 | cut -d$'\n' -f1)
     fi
 	OS=$(echo "$OSVER" | tr "[:upper:]" "[:lower:]")
 	echo "Found $OS"
@@ -45,7 +45,7 @@ Linux)
 *)
 	echo "Unknown OS Type:"
 	echo "$OSBASE"
-	echo $(uname -o)
+	"uname -o"
 	echo "$MACHTYPE"
 	echo
 	echo "Exiting."
@@ -123,8 +123,7 @@ centos|redhat)
 		else
 			OSREL=$(cut -d' ' -f3 < /etc/"$OS"-release)
 		fi
-		MAJVER=$(echo "$OSREL" | cut -d. -f1)
-		MINVER=$(echo "$OSREL" | cut -d. -f2)
+		MAJVER=$(echo "$OSREL" | cut -d. -f1)		
 		REPOURL="https://yum.puppetlabs.com/el/$MAJVER/products/$HOSTTYPE/puppetlabs-release-$MAJVER-10.noarch.rpm"
 		if [ ! "$(yum repolist | grep puppetlabs -m 1)" ]; then
 			echo "Adding PuppetLabs repo: $REPOURL"
