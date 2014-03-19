@@ -2,7 +2,8 @@
 # sed some changes in for SmartOS compatibility
 
 NGINX="jfryman-nginx"
-GIT="jproyo-git"
+GIT="puppetlabs-git"
+CRON="torrancew-cron"
 VCSREPO="puppetlabs-vcsrepo"
 OSBASE=$(uname)
 case $OSBASE in
@@ -61,18 +62,12 @@ else
 	echo "Module $GIT detected."	
 fi
 
-if [ "$OSBASE" == "SunOS" ]; then
-	echo "Checking $GIT for SmartOS fixes."
-	if [ ! "$(grep SmartOS "$MODULE_DIR"/git/manifests/params.pp)" ]; then
-		echo "Applying params.pp \$::operatingsystem compatibility fix."
-		sed -i 's/$bin =/$bin = $::operatingsystem ? {\
-		\(SmartOS|Solaris\) => "\/opt\/local\/bin\/git"\
-		default             => "\/usr\/bin\/git"\
-		}/' "$PUPPET_ROOT/modules/git/manifests/params.pp"
-		echo "Done."
-	else 
-		echo "params.pp \$::operatingsystem compatibility fix detected."
-	fi
+if [ ! "$(puppet module list | grep $CRON)" ]; then
+	echo "Installing module: $CRON"
+	puppet module install "$CRON"
+	echo "Done."
+else
+	echo "Module $CRON detected."	
 fi
 
 if [ ! "$(puppet module list | grep $VCSREPO)" ]; then
