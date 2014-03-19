@@ -113,17 +113,19 @@ smartosin)
 		exit 0
 	fi
 ;;
-centos|redhat)
+centos|redhat|fedora)
 	# check for puppet
 	echo "Checking for Puppet..."
 	if [ ! "$(which puppet)" ]; then
 		# set repo
 		if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
 			OSREL=$(lsb_release -r | cut -d: -f2 | sed s/'^\t'//)
+		elif [ "$OS" EQ "fedora" ]; then
+			OSREL=f$(cut -d' ' -f3 < /etc/"$OS"-release)
 		else
 			OSREL=$(cut -d' ' -f3 < /etc/"$OS"-release)
 		fi
-		MAJVER=$(echo "$OSREL" | cut -d. -f1)		
+		MAJVER=$(echo "$OSREL" | cut -d. -f1)
 		REPOURL="https://yum.puppetlabs.com/el/$MAJVER/products/$HOSTTYPE/puppetlabs-release-$MAJVER-10.noarch.rpm"
 		if [ ! "$(yum repolist | grep puppetlabs -m 1)" ]; then
 			echo "Adding PuppetLabs repo: $REPOURL"

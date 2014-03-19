@@ -21,6 +21,7 @@ echo "\t-Ubuntu 10.04"
 echo "\t-Ubuntu 12.04"
 echo "\t-Debian 6"
 echo "\t-CentOS 6"
+echo "\t-Fedora 18"
 echo "\t-Probably RHEL!"
 echo
 echo
