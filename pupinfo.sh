@@ -13,6 +13,6 @@ IP=$(ip route get "$DEST" | awk 'NR==1 {print $NF}')
 
 echo "NGINX accesible at http://$IP:8080"
 echo "Puppet apply runs every 30 minutes with the following cron job."
-echo " - $(grep -r $PUPPET_ROOT/pupapply.sh /etc/cron.d/)"
+echo " - $(grep -r $PUPPET_ROOT/pupapply.sh /etc/cron.d/ | cut -d: -f2)"
 echo
 echo "Enjoy!"
