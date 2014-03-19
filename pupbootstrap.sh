@@ -116,11 +116,11 @@ smartosin)
 centos|redhat|fedora)
 	# check for puppet
 	echo "Checking for Puppet..."
-	if [ ! "$(which puppet)" ]; then
+	if [ ! "which puppet" ]; then
 		# set repo
 		if [ -f /etc/lsb-release -o -d /etc/lsb-release.d ]; then
 			OSREL=$(lsb_release -r | cut -d: -f2 | sed s/'^\t'//)
-		elif [ "$OS" EQ "fedora" ]; then
+		elif [ "$OS" == "fedora" ]; then
 			OSREL=f$(cut -d' ' -f3 < /etc/"$OS"-release)
 		else
 			OSREL=$(cut -d' ' -f3 < /etc/"$OS"-release)
