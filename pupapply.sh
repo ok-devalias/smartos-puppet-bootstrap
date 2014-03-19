@@ -13,11 +13,14 @@ MANIFEST_DIR="$PUPPET_ROOT/manifests"
 MODULE_DIR="$PUPPET_ROOT/modules"
 
 if [ ! -f "$MANIFEST_DIR/$MANIFEST" ] || [ ! "$(diff "$MANIFEST" "$MANIFEST_DIR/$MANIFEST")" ]; then	
+	if [ ! -d "$MANIFEST_DIR" ]; then
+		mkdir "$MANIFEST_DIR"
+	fi
 	echo "Copying manifest $MANIFEST to $MANIFEST_DIR."
 	cp "$MANIFEST" "$MANIFEST_DIR/$MANIFEST"
 fi
 
-if [ -d $MODULE_DIR ]; then
+if [ -d "$MODULE_DIR" ]; then
 	echo "Applying manifest."
 	puppet apply --modulepath "$MODULE_DIR" "$MANIFEST_DIR/$MANIFEST"
 else
