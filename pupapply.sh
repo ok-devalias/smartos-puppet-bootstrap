@@ -23,7 +23,7 @@ if [ -d "$MODULE_DIR" ]; then
 fi
 
 echo "Starting Cronjob process."
-bash pupcron.sh
+./pupcron.sh
 
 if [ ! $? == 0 ]; then
 	echo "Something went wrong in the cronjob process."

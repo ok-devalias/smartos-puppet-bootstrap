@@ -1,4 +1,5 @@
 # set cronjob for puppet apply maintenance
+
 OSBASE=$(uname)
 case $OSBASE in
 SunOS)
@@ -26,7 +27,8 @@ if [ ! "$(crontab -l | grep "$SCRIPT")" ]; then
 	if [ -f "$PUPPET_ROOT/$SCRIPT" ]; then
 		echo "Setting cron job to maintain state."
 		CRON="*/30 * * * * $PUPPET_ROOT/$SCRIPT"
-		crontab < echo "$CRON"
+		echo "$CRON" >> "/etc/config/crontab"
+		crontab "/etc/config/crontab"
 		echo "Cron job set.  State maintained."
 	else
 		echo "Missing $SCRIPT at $PUPPET_ROOT"

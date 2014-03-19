@@ -28,7 +28,7 @@ echo
 sleep 2
 
 echo "Starting puppet bootstrap process."
-bash pupbootstrap.sh
+./pupbootstrap.sh 2> /dev/null
 
 if [ ! $? == 0 ]; then
 	echo "Something went wrong in bootstrap."
@@ -38,7 +38,7 @@ fi
 echo "Puppet bootstrap process completed."
 echo
 echo "Starting module install process."
-bash pupmodule-inst.sh
+./pupmodule-inst.sh 2> /dev/null
 
 if [ ! $? == 0 ]; then
 	echo "Something went wrong in the module installation process."
@@ -48,7 +48,7 @@ fi
 echo "Module install process completed."
 echo
 echo "Applying puppet manifest."
-bash pupapply.sh
+./pupapply.sh 2> /dev/null
 
 if [ ! $? == 0 ]; then
 	echo "Something went wrong in the puppet apply process."
@@ -57,5 +57,5 @@ fi
 
 echo "Puppet manifest applied."
 echo
-bash pupinfo.sh
+./pupinfo.sh
 
