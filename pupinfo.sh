@@ -1,6 +1,6 @@
 # displays info for file locations and NGINX connection address
 
-DEST=$(cut -d' ' -f2< /etc/resolv.conf)
+DEST=$(grep nameserver /etc/resolv.conf -m 1| cut -d' ' -f2)
 IP=$(ip route get "$DEST" | awk 'NR==1 {print $NF}')
 
 echo "NGINX accesible at http://$IP:8080"
