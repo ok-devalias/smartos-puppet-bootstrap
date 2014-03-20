@@ -16,52 +16,30 @@ SunOS)
 esac
 MODULE_DIR="$PUPPET_ROOT/modules"
 
+# ugly fix for puppet 3.1.1, the available package in smartos pkgin repo.
+if [ "$(puppet --version)" == "3.1.1" ]; then
+	if [ "$OSBASE" == "SunOS" ]; then
+		sed -i '/defaultfor :operatingsystem/ { s/\(:dragonfly, :netbsd\)/\1, :smartos/; } ' '/opt/local/lib/ruby/gems/1.9.3/gems/puppet-3.1.1/lib/puppet/provider/package/pkgin.rb'
+	fi
+fi
+ 
 echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep $NGINX)" ]; then
 	echo "Installing module: $NGINX"
 	puppet module install "$NGINX"
+	# temporary hack
 	if [ "$OSBASE" == "SunOS" ]; then
 		pkgin -y in nginx > /dev/null 2&>1
 	fi
-	echo "Done."	
+	echo "Done."
 else
-	echo "Module $NGINX detected."	
-fi
-
-if [ "$OSBASE" == "SunOS" ]; then
-    pkgin -y in nginx > /dev/null 2&>1
-	pkgin -y in git > /dev/null 2&>1
-	echo "Checking $NGINX for SmartOS fixes."
-	if [ ! "$(grep sunos "$MODULE_DIR"/nginx/manifests/params.pp)" ]; then
-		echo "Applying params.pp \$::kernel compatibility fix."
-		sed -i '/$::kernel ?/ {N; s/\(?i-mx:linux\)/\1\|sunos/}' "$PUPPET_ROOT/modules/nginx/manifests/params.pp"
-	else
-		echo "params.pp \$::kernel compatibility fix detected."
-	fi
-	if [ ! "$(grep solaris "$MODULE_DIR"/nginx/manifests/params.pp)" ]; then
-		echo "Applying params.pp \$::osfamily compatibility fix."
-		sed -i '/$::osfamily ?/ {N; s/\(?i-mx:\)/\1solaris\|/}' "$PUPPET_ROOT/modules/nginx/manifests/params.pp"
-	else
-		echo "params.pp \$::osfamily compatibility fix detected."	
-	fi
-	if [ ! "$(grep smartos "$MODULE_DIR"/nginx/manifests/params.pp)" ]; then
-		echo "Applying params.pp \$::operatingsystem compatibility fix."
-		sed -i 's/\(?i-mx:[a-z|]*|oraclelinux\)/\1|smartos/' "$PUPPET_ROOT/modules/nginx/manifests/params.pp"
-	else
-		echo "params.pp \$::operatingsystem compatibility fix detected."
-	fi
-	if [ ! "$(grep solaris "$MODULE_DIR"/nginx/manifests/package.pp)" ]; then
-		echo "Applying package.pp \$::osfamily compatibility fix."
-		sed -i "/\$::osfamily/ {N; s/\('redhat'\)/\1, 'Solaris'/ }" "$PUPPET_ROOT/modules/nginx/manifests/package.pp"
-	else
-		echo "package.pp \$::osfamily compatibility fix detected."
-	fi
-	echo "Done."	
+	echo "Module $NGINX detected."
 fi
 
 if [ ! "$(puppet module list | grep $GIT)" ]; then
 	echo "Installing module: $GIT"
 	puppet module install "$GIT"
+	# temporary hack
 	if [ "$OSBASE" == "SunOS" ]; then
 		pkgin -y in git > /dev/null 2&>1
 	fi
