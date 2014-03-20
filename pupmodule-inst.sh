@@ -26,7 +26,11 @@ fi
 echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep $NGINX)" ]; then
 	echo "Installing module: $NGINX"
-	puppet module install "$NGINX"
+	if [ "$OSBASE" == "SunOS" ]; then
+		git clone https://github.com/"$(sed "s/$NGINX/\//")"
+	else
+		puppet module install "$NGINX"	
+	fi
 	echo "Done."
 else
 	echo "Module $NGINX detected."
