@@ -24,10 +24,10 @@ if [ "$(puppet --version)" == "3.1.1" ]; then
 fi
  
 echo "Checking for needed puppet modules."
-if [ ! "$(puppet module list | grep $NGINX)" ]; then
+if [ ! "$(puppet module list | grep nginx)" ]; then
 	echo "Installing module: $NGINX"
 	if [ "$OSBASE" == "SunOS" ]; then
-		git clone https://github.com/"$(sed "s/$NGINX/\//")"
+	    git clone https://github.com/"$(sed "s/$NGINX/\//")" "$MODULE_DIR"
 	else
 		puppet module install "$NGINX"	
 	fi
