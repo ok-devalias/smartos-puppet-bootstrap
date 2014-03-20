@@ -27,10 +27,6 @@ echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep $NGINX)" ]; then
 	echo "Installing module: $NGINX"
 	puppet module install "$NGINX"
-	# temporary hack
-	if [ "$OSBASE" == "SunOS" ]; then
-		pkgin -y in nginx > /dev/null 2&>1
-	fi
 	echo "Done."
 else
 	echo "Module $NGINX detected."
@@ -39,10 +35,6 @@ fi
 if [ ! "$(puppet module list | grep $GIT)" ]; then
 	echo "Installing module: $GIT"
 	puppet module install "$GIT"
-	# temporary hack
-	if [ "$OSBASE" == "SunOS" ]; then
-		pkgin -y in git > /dev/null 2&>1
-	fi
 	echo "Done."
 else
 	echo "Module $GIT detected."	
