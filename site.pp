@@ -12,7 +12,7 @@ node default {
      SmartOS => '/opt/local/etc/puppet',
 	 default   => '/etc/puppet',
    }
-   
+      
   nginx::resource::vhost { 'puppetlabs_exercise':
     ensure    		=> present,
     www_root  => $rootpath,
@@ -25,10 +25,16 @@ node default {
     source    	=> 'https://github.com/puppetlabs/exercise-webpage.git',
   }
   
-  cron::hourly{
-	  'pupapply.sh':
+  vcsrepo { "$puppetpath/module/nginx":
+    ensure		=> present,	
+	provider	=> git,
+    source    	=> 'https://github.com/jfryman/puppet-nginx.git',
+	before		=> Nginx::resource::vhost['puppetlabs_exercise'],
+  }
+  
+  cron::hourly { 'pupapply.sh':
 		minute      		=> '11',
 		user        			=> 'root',
-		command    	=> "$puppetpath/pupapply.sh",		
+		command    	=> "$puppetpath/pupapply.sh",
 	}
 }
