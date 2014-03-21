@@ -25,17 +25,23 @@ fi
  
 echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep nginx)" ]; then
-	echo "Installing module: $NGINX"
-	puppet module install "$NGINX"
+	echo "Installing module: $NGINX"	
 	# puppet forge module jfryman-nginx does not support solaris or smartos, so github fork is used.
-	if [ "$OSBASE" == "SunOS" ]; then	    
+	if [ "$OSBASE" == "SunOS" ]; then
+	    echo "Installing prerequisite modules."
+		puppet module install puppetlabs-concat 2>&1
+		puppet module install puppetlabs-stdlib 2>&1
+		puppet module install puppetlabs-apt 2>&1
+		echo "Installing git"
 		pkgin -y in git > /dev/null 2>&1
 		# git clone https://github.com/"$(sed "s/$NGINX/\//")" "$MODULE_DIR/nginx" ## use if pull request accepted
-		cd "$MODULE_DIR/nginx"
-		git init
-		git remote add origin https://github.com/ok-devalias/puppet-nginx.git
-		git fetch
-		git checkout -t origin/master
+		echo "Cloning nginx module from github for SmartOS compatibility."
+		if [ ! -d "$MODULE_DIR/nginx" ]; then
+			mkdir "$MODULE_DIR/nginx"
+		fi
+		git clone https://github.com/ok-devalias/puppet-nginx.git "$MODULE_DIR/nginx"
+	else
+		puppet module install "$NGINX"
 	fi
 	echo "Done."
 else
