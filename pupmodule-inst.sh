@@ -29,7 +29,7 @@ if [ ! "$(puppet module list | grep nginx)" ]; then
 	puppet module install "$NGINX"
 	# puppet forge module jfryman-nginx does not support solaris or smartos, so github fork is used.
 	if [ "$OSBASE" == "SunOS" ]; then	    
-		pkgin -y in git > /dev/null 2&>1
+		pkgin -y in git > /dev/null 2>&1
 		# git clone https://github.com/"$(sed "s/$NGINX/\//")" "$MODULE_DIR/nginx" ## use if pull request accepted
 		cd "$MODULE_DIR/nginx"
 		git init
