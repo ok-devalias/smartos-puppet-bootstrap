@@ -31,7 +31,11 @@ if [ ! "$(puppet module list | grep nginx)" ]; then
 	if [ "$OSBASE" == "SunOS" ]; then	    
 		pkgin -y in git > /dev/null 2&>1
 		# git clone https://github.com/"$(sed "s/$NGINX/\//")" "$MODULE_DIR/nginx" ## use if pull request accepted
-		git clone https://github.com/ok-devalias/puppet-nginx.git "$MODULE_DIR/nginx"
+		cd "$MODULE_DIR/nginx"
+		git init
+		git remote add origin https://github.com/ok-devalias/puppet-nginx.git
+		git fetch
+		git checkout -t origin/master
 	fi
 	echo "Done."
 else
