@@ -29,8 +29,7 @@ if [ ! "$(puppet module list | grep nginx)" ]; then
 	# puppet forge module jfryman-nginx does not support solaris or smartos, so github fork is used.
 	if [ "$OSBASE" == "SunOS" ]; then
 	    echo "Installing prerequisite modules."
-		puppet module install puppetlabs-concat 2>&1
-		puppet module install puppetlabs-stdlib 2>&1
+		puppet module install puppetlabs-concat 2>&1		
 		puppet module install puppetlabs-apt 2>&1
 		echo "Installing git"
 		pkgin -y in git > /dev/null 2>&1
