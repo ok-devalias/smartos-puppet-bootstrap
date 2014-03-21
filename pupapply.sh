@@ -20,10 +20,6 @@ if [ ! -f "$MANIFEST_DIR/$MANIFEST" ] || [ ! "$(diff "$MANIFEST" "$MANIFEST_DIR/
 	cp "$MANIFEST" "$MANIFEST_DIR/$MANIFEST"
 fi
 
-if [ ! -f "/root/pupapply.sh" ]; then
-	cp "$0" "/root/"
-fi
-
 if [ -d "$MODULE_DIR" ]; then
 	echo "Applying manifest."
 	puppet apply --modulepath "$MODULE_DIR" "$MANIFEST_DIR/$MANIFEST"
