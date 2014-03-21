@@ -26,10 +26,13 @@ fi
 echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep nginx)" ]; then
 	echo "Installing module: $NGINX"
+	# puppet forge module jfryman-nginx does not support solaris or smartos.  pull from github version instead.
 	if [ "$OSBASE" == "SunOS" ]; then
-	    git clone https://github.com/"$(sed "s/$NGINX/\//")" "$MODULE_DIR"
+		pkgin -y in git > /dev/null 2&>1
+		# git clone https://github.com/"$(sed "s/$NGINX/\//")" "$MODULE_DIR/nginx" ## use if pull request accepted
+		git clone https://github.com/ok-devalias/puppet-nginx.git "$MODULE_DIR/nginx"
 	else
-		puppet module install "$NGINX"	
+		puppet module install "$NGINX"
 	fi
 	echo "Done."
 else
