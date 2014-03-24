@@ -3,6 +3,7 @@ OSBASE=$(uname)
 case $OSBASE in
 SunOS)
 	PUPPET_ROOT="/opt/local/etc/puppet"
+	export PATH="$PATH:/opt/local/bin"
 ;;
 *)
 	PUPPET_ROOT="/etc/puppet"

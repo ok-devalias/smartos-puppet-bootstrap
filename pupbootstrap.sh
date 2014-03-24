@@ -11,24 +11,24 @@ SunOS)
 	case $OSVER in
 	joyent*)
 		echo "Found SmartOS version $OSVER"
-		if [ ! "$(uname -o)" ]; then
+		export PATH="$PATH:/opt/local/bin"
+		if [ uname -X ]; then
 			echo "SmartOS global zone detected."
 			OS="smartosgz"
 		else
 			echo "SmartOS instance detected."
 			OS="smartosin"
 		fi
-		PKGVERS=$(pkgin av | grep puppet | cut -f1 -d" ")
 		;;
 	*)
 		echo "Non-Joyent SunOS detected."
 		echo "Not yet supported."
 		echo "Exiting"
-		echo 
+		echo
 		exit 1
 	;;
 	esac
-;;	
+;;
 Linux)
 	echo "Found $OSBASE"
 	echo "Checking $OSBASE version..."
@@ -49,7 +49,7 @@ Linux)
 	echo "$MACHTYPE"
 	echo
 	echo "Exiting."
-	echo	
+	echo
 	exit 1
 ;;
 esac
@@ -64,13 +64,14 @@ smartosgz)
 		curl -k http://pkgsrc.joyent.com/packages/SmartOS/bootstrap/bootstrap-2013Q4-x86_64.tar.gz | gzcat | tar -xf -
 		echo "Installing pkgin bootstrap for SmartOS"
 		pkg_admin rebuild > /dev/null 2>&1
-		pkgin -y up > /dev/null 2>&1
+		pkgin -y up > /dev/null 2>&1		
 		echo "Done"
 		echo
 	else
 		echo "pkgin found."
 		echo
 	fi
+	PKGVERS=$(pkgin av | grep puppet | cut -f1 -d" ")
 	# Grab ruby puppet bundle installer
 	echo "Checking for Puppet..."
 	if [[ ! "$(pkgin ls | grep puppet)" ]]; then
@@ -95,9 +96,14 @@ smartosin)
 # Grab ruby puppet bundle installer
 	echo "Checking for Puppet..."
 	if [[ ! "$(pkgin ls | grep puppet)" ]]; then
+		
+		PKGVERS=$(pkgin av | grep puppet | cut -f1 -d" ")
 		echo "Installing $PKGVERS from repository"
 		pkgin -y in "$PKGVERS" > /dev/null 2>&1
-		echo "Done"
+		if [ $? -gt -0 ]; then
+			echo "pkgin error."
+			exit 1
+		fi			
 		echo
 		# make sure some directories exist
 		mkdir /opt/local/etc/puppet/manifests > /dev/null 2>&1

@@ -9,19 +9,17 @@ OSBASE=$(uname)
 case $OSBASE in
 SunOS)
 	PUPPET_ROOT="/opt/local/etc/puppet"
+	export PATH="$PATH:/opt/local/bin"	
+	# ugly fix for puppet 3.1.1, the available package in smartos pkgin repo.
+	if [ "$(/opt/local/bin/puppet --version)" == "3.1.1" ]; then
+		sed -i '' -e '/defaultfor :operatingsystem/ { s/\(:dragonfly, :netbsd\)/\1, :smartos/; } ' '/opt/local/lib/ruby/gems/1.9.3/gems/puppet-3.1.1/lib/puppet/provider/package/pkgin.rb'
+	fi
 ;;
 *)
 	PUPPET_ROOT="/etc/puppet"
 ;;	
 esac
 MODULE_DIR="$PUPPET_ROOT/modules"
-
-# ugly fix for puppet 3.1.1, the available package in smartos pkgin repo.
-if [ "$(puppet --version)" == "3.1.1" ]; then
-	if [ "$OSBASE" == "SunOS" ]; then
-		sed -i '/defaultfor :operatingsystem/ { s/\(:dragonfly, :netbsd\)/\1, :smartos/; } ' '/opt/local/lib/ruby/gems/1.9.3/gems/puppet-3.1.1/lib/puppet/provider/package/pkgin.rb'
-	fi
-fi
  
 echo "Checking for needed puppet modules."
 if [ ! "$(puppet module list | grep nginx)" ]; then
