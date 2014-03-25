@@ -1,0 +1,5 @@
+# Customer-metadata / user-script 
+# $IP  is the ip address of the system from which to pull the script.
+# SmartOS instances may launch user-script before network is fully up, so a loop is used to wait until the network is up or user-script times out.
+
+while true; do ping $ip; if [[ $? == 0 ]]; then break; else sleep 2; fi ; done; cd /root; curl -o scripts.tgz http://$IP/path/to/scripts.tgz; tar xvf scripts.tgz; ./runme.sh
