@@ -1,4 +1,4 @@
-smartos-configs
+smartos-puppet-bootstrap
 ===============
 
 Repository for various SmartOS-related scripts, smf manifests, and json documents.
